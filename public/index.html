@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Produktivitas Bot — Asisten Produktivitas Pribadi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <div class="brand-text">
+        <span class="brand-name">produktivitas<span class="brand-caret">_</span>bot</span>
+        <span class="brand-sub">Asisten Produktivitas Pribadi · Gemini AI</span>
+      </div>
+    </div>
+    <div class="model-badge">
+      <span class="badge-label">model</span>
+      <span class="badge-value">gemini-2.5-flash</span>
+    </div>
+    <button class="config-toggle" id="config-toggle" aria-label="Buka pengaturan model" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span>Parameter</span>
+    </button>
+  </header>
+
+  <main class="layout">
+
+    <section class="chat-panel">
+      <div class="chat-window" id="chat-window">
+        <div class="intro-msg">
+          <p><strong>Halo! Aku asisten produktivitas kamu 📋</strong></p>
+          <p>Ceritakan tugas, deadline, atau to-do list kamu — aku bantu susun prioritas, pecah jadi langkah kecil, dan kasih pengingat. Semua respons dihasilkan langsung oleh <code>gemini-2.5-flash</code> lewat <code>/api/chat</code>.</p>
+        </div>
+      </div>
+
+      <form class="composer" id="chat-form">
+        <textarea
+          id="user-input"
+          class="composer-input"
+          placeholder="Contoh: Aku punya 5 tugas kuliah minggu ini, bantu urutkan prioritasnya…"
+          rows="1"
+          required
+        ></textarea>
+        <button type="submit" class="send-btn" id="send-btn" aria-label="Kirim pesan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <aside class="config-panel" id="config-panel">
+      <div class="config-header">
+        <h2>Model Config</h2>
+        <button class="new-chat-btn" id="new-chat-btn" title="Mulai percakapan baru">↻ New chat</button>
+      </div>
+
+      <div class="config-group">
+        <label class="config-label" for="temperature-slider">
+          <span>temperature</span>
+          <span class="config-value" id="temperature-value">0.70</span>
+        </label>
+        <input type="range" id="temperature-slider" min="0" max="2" step="0.05" value="0.7" />
+        <p class="config-hint">Keacakan output. Rendah = to-do list lebih konsisten & to the point.</p>
+      </div>
+
+      <div class="config-group">
+        <label class="config-label" for="top-p-slider">
+          <span>top_p</span>
+          <span class="config-value" id="top-p-value">0.90</span>
+        </label>
+        <input type="range" id="top-p-slider" min="0" max="1" step="0.05" value="0.9" />
+        <p class="config-hint">Nucleus sampling — batasi keacakan token.</p>
+      </div>
+
+      <div class="config-group">
+        <label class="config-label" for="top-k-slider">
+          <span>top_k</span>
+          <span class="config-value" id="top-k-value">32</span>
+        </label>
+        <input type="range" id="top-k-slider" min="1" max="40" step="1" value="32" />
+        <p class="config-hint">Batasi ke top-K token paling mungkin.</p>
+      </div>
+
+      <div class="config-group">
+        <label class="config-label" for="system-instruction">
+          <span>system_instruction</span>
+        </label>
+        <textarea id="system-instruction" class="system-textarea" rows="6">Kamu adalah asisten produktivitas pribadi. Bantu pengguna menyusun to-do list, memprioritaskan tugas (misalnya berdasarkan urgensi dan deadline), memecah tugas besar jadi langkah-langkah kecil yang bisa dikerjakan, dan memberi pengingat. Jawab singkat, praktis, dan gunakan poin-poin atau daftar bernomor bila relevan.</textarea>
+
+        <div class="preset-row">
+          <button type="button" class="preset-chip" data-preset="prioritas">📌 Fokus Prioritas</button>
+          <button type="button" class="preset-chip" data-preset="pecah">🧩 Pecah Tugas</button>
+          <button type="button" class="preset-chip" data-preset="motivasi">🔥 Gaya Memotivasi</button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <footer class="statusbar">
+    <span id="status-text">Terhubung ke <code>/api/chat</code></span>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
